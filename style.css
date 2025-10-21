@@ -38,7 +38,7 @@ body {
   height: 60%;
   background: linear-gradient(var(--clr-primary), var(--clr-secondary));
   z-index: -10;
-  clip-path: ellipse(90% 70% at 50% 30%);
+  clip-path: ellipse(90% 55% at 50% 30%);
 }
 
 /* Header with hamburger menu */
@@ -59,8 +59,8 @@ body {
 }
 
 .hamburger-line {
-  width: 25px;
-  height: 2.5px;
+  width: 30px;
+  height: 3px;
   background: white;
   border-radius: 2px;
   margin-left: 1rem;
@@ -102,6 +102,18 @@ body {
   top: -1em;
 }
 
+.time-info{
+  margin: 0;
+}
+
+.weather-description{
+  display: flex;
+}
+
+.weather-description img{
+  margin-left: 1rem
+}
+
 /* Sun times section */
 .sun-times {
   display: flex;
@@ -113,7 +125,7 @@ body {
 /* Navigation arrow */
 .nav-arrow {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 43vh);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 51vh);
   right: clamp(12px, 4vw, 24px);
   width: 60px;
   height: 60px;
@@ -154,7 +166,6 @@ body {
   }
 } */
 
-/* .weather-display     <section class="weather-display"> - Hela vädervisningen */
 /* .weather-icon         <div class="weather-icon"> - Container för väderikonen */
 /* .temperature          <div class="temperature"> - Container för temperaturen */
 /*  .temp-value          <span class="temp-value"> - Siffran "20" */
