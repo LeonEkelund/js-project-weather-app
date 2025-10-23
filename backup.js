@@ -246,4 +246,4 @@ function buildUrl(lon: number, lat: number) {
 // Or, for another city:
 
 // let url = buildUrl(cities[2].lon, cities[2].lat); // Malmö*/
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=backup.js.map

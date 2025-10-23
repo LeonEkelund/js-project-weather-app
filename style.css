@@ -8,34 +8,33 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  height: 100vh;
   background: #f3f5fb;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: white;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 /* Main weather app container */
 .weather-app {
   max-width: 375px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 20px;
   position: relative;
-  overflow: hidden;
   border-radius: 0;
   background: #ffffff;
-  max-height: fit-content;
   z-index: 1;
+  overflow: hidden;
 }
 
 .hero-bg {
   position: absolute;
   inset: 0;
-  height: 60%;
+  height: 57%;
   background: linear-gradient(var(--clr-primary), var(--clr-secondary));
   z-index: -10;
   clip-path: ellipse(90% 55% at 50% 30%);
@@ -76,6 +75,23 @@ body {
 
 .weather-card {
   margin-left: 1rem;
+  position: relative;
+  height: 100%;
+}
+
+/* Weather icon positioned in top right corner */
+.weather-icon-top {
+  position: absolute;
+  top: 20px;
+  right: 5px;
+  width: 110px;
+  height: 110px;
+  z-index: 2;
+}
+
+.weather-content {
+  position: relative;
+  z-index: 1;
 }
 
 .city-name {
@@ -85,10 +101,9 @@ body {
 }
 
 .temperature {
-  font-size: 5.5rem;
+  font-size: 5.2rem;
   font-weight: 400;
-  margin-bottom: 0;
-  margin-top: 25px;
+  margin: 0;
 }
 
 .temperature sup {
@@ -124,9 +139,10 @@ body {
 
 /* Navigation arrow */
 .nav-arrow {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 51vh);
-  right: clamp(12px, 4vw, 24px);
+  position: fixed;
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -143,38 +159,82 @@ body {
 }
 
 .nav-arrow:hover {
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .nav-arrow svg {
   margin-left: 2px;
 }
 
-/* Responsive adjustments */
-/* @media (max-width: 400px) {
+ /* Responsive adjustments */
+@media (max-width: 400px) {
+  .nav-arrow {
+    width: 50px;
+    height: 50px;
+    right: 20px;
+  }
+}
+
+/* Desktop adjustments */
+@media (min-width: 500px) {
+  .nav-arrow {
+    position: fixed;
+    right: calc(50vw - 187.5px + 25px);
+    /* 50vw = center, 187.5px = half of 375px weather-app width, +25px = original right position */
+  }
+  
   .weather-app {
-    padding: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   }
+} 
 
-  .temp-value {
-    font-size: 4rem;
-  }
+/* 4-Day Forecast Section */
+.forecast-section {
+    padding: 30px 20px 120px;
+}
 
-  .weather-icon img {
-    width: 100px;
-    height: 100px;
-  }
-} */
+.forecast-day {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-/* .weather-icon         <div class="weather-icon"> - Container för väderikonen */
-/* .temperature          <div class="temperature"> - Container för temperaturen */
-/*  .temp-value          <span class="temp-value"> - Siffran "20" */
-/*  .temp-unit           <span class="temp-unit"> - "°C" */
-/*  .location-info       <div class="location-info"> - Container för plats-info */
-/*  .city-name          <h1 class="city-name"> - "San fransisco" */
-/* .weather-description  <p class="weather-description"> - "Sunny" */
+.forecast-day:last-child {
+  border-bottom: none;
+}
 
-/*  .sun-times            <section class="sun-times"> - Container för alla sol-tider */
-/*  .sun-time-item        <div class="sun-time-item"> - Varje rad (sunrise/sunset) */
-/*  .sun-label            <span class="sun-label"> - "Sunrise" eller "Sunset" */
-/*  .sun-value            <span class="sun-value"> - Tiderna "22:30", "00:00" */
+.forecast-day-name {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #666;
+  min-width: 50px;
+}
+
+.forecast-icon {
+  width: 45px;
+  height: 45px;
+  margin: 0 15px;
+}
+
+.forecast-temps {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.forecast-temp-high {
+  color: #333;
+  font-weight: 500;
+}
+
+.forecast-temp-low {
+  color: #999;
+  font-weight: 400;
+}
+
+.forecast-temp-separator {
+  color: #ccc;
+}
