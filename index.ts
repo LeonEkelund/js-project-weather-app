@@ -9,7 +9,7 @@ const nextBtn = document.getElementById("btn") as HTMLButtonElement;
 
 nextBtn.disabled = true; //Disable button until fetch
 
-//================Interfaces and type=========================
+//================INTERFACES AND TYPES=========================
 
 interface SMHIResponse {
   timeSeries: {
@@ -43,7 +43,7 @@ type ForecastDay = {
   symbol_code: number;
 };
 
-//City array
+//============================City array==========================================
 const cities: City[] = [
   { name: "Stockholm", lon: 18.0686, lat: 59.3293 },
   { name: "Göteborg", lon: 11.9746, lat: 57.7089 },
@@ -54,16 +54,17 @@ const cities: City[] = [
   { name: "Helsingfors", lon: 12.6134, lat: 56.0356 },
 ];
 
+// ========Global state: store weather data and track current city================
 let allCitiesWeather: any = []; // Store current weather data for all cities
 let allCitiesForecasts: ForecastDay[][] = []; // Store 4-day forecasts for all cities
 let currentCityIndex = 0; //Keep track of the currently displayed city
 
-// Function to get day name from date
+//========= Function to get day name from date=====================================
 const getDayName = (dateString: string): string => {
   const date = new Date(dateString);
-  const today = new Date(); //dagens datum
-  const tomorrow = new Date(today); //kopia av dagens datum
-  tomorrow.setDate(today.getDate() + 1); //lägger till 1 dag = imorgon
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
 
   if (date.toDateString() === today.toDateString()) return "Today";
   if (date.toDateString() === tomorrow.toDateString()) return "Tomorrow";
@@ -71,25 +72,28 @@ const getDayName = (dateString: string): string => {
   return date.toLocaleDateString("en-US", { weekday: "short" });
 };
 
-// Function to create 4-day forecast from timeSeries data
+//========== Function to create 4-day forecast from timeSeries data==================
 const createForecast = (
   timeSeries: SMHIResponse["timeSeries"]
 ): ForecastDay[] => {
+  // 1. Prepare a data structure to group weather data by date
+  // The key is a date string (e.g., "Tue Oct 22 2025"), and the value stores temperatures, symbols, and times
   const dailyData: {
     [key: string]: { temps: number[]; symbols: number[]; times: string[] };
   } = {};
 
-  // Group data by date (next 4 days)
-  const today = new Date(); //skapar ett date objekt för dagens datum och tid
+  //  2. Initialize an empty structure for the next 4 days
+  // (creates a placeholder for each day we want to display)
+  const today = new Date(); // Create a Date object for today
   for (let i = 0; i < 4; i++) {
-    //loopar 4 gånger för att skapa 4 dagar framåt
-    const date = new Date(today); //
-    date.setDate(today.getDate() + i);
-    const dateKey = date.toDateString();
-    dailyData[dateKey] = { temps: [], symbols: [], times: [] };
+    const date = new Date(today); // Copy today's date
+    date.setDate(today.getDate() + i); // Add i days ahead
+    const dateKey = date.toDateString(); // Convert date to string for use as a key
+    dailyData[dateKey] = { temps: [], symbols: [], times: [] }; // Initialize entry for this day
   }
 
-  // Process timeSeries data
+  // 3. Process the SMHI timeSeries data and sort it into the correct day
+  // (adds temperature, weather symbol, and time to each day's entry)
   timeSeries.forEach((item) => {
     const itemDate = new Date(item.time);
     const dateKey = itemDate.toDateString();
@@ -101,17 +105,23 @@ const createForecast = (
     }
   });
 
-  // Create forecast array
+  // 4. Convert grouped data into an array of ForecastDay objects
   const forecast: ForecastDay[] = [];
+
+  // Loop through each date in dailyData (one entry per day)
   Object.keys(dailyData).forEach((dateKey, index) => {
     const data = dailyData[dateKey];
+
+    //Ensure we have temperature data before calculating
     if (data && data.temps.length > 0) {
+      //  Calculate daily high and low temperatures
       const tempHigh = Math.round(Math.max(...data.temps));
       const tempLow = Math.round(Math.min(...data.temps));
       // Use most common symbol (simplified - could be more sophisticated)
       const symbol_code =
         data.symbols[Math.floor(data.symbols.length / 2)] || 1;
 
+      //  Build a ForecastDay object and add it to the forecast array
       forecast.push({
         day: getDayName(dateKey),
         date: dateKey,
@@ -129,29 +139,33 @@ const createForecast = (
   return forecast.slice(0, 4); // Ensure only 4 days
 };
 
+//================= Fetch and process weather data for all cities=====================
 for (const city of cities) {
-  // Looping through City array
+  //  1. Build the SMHI API URL for this specific city
   const url = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/${city.lon}/lat/${city.lat}/data.json`;
 
+  //2. Fetch weather data from the SMHI API
   fetch(url) //Fetches data from the SMHI API
     .then((response) => response.json())
     .then((data: SMHIResponse) => {
+      // 3. Simplify SMHI data into a lighter structure. Keep only what’s needed: city name, time, temperature, and symbol
       const simplifiedData = data.timeSeries.map((p) => ({
-        city: city.name, //saves the data into a new list of data
+        city: city.name,
         time: p.time,
         air_temperature: p.data.air_temperature,
         symbol_code: p.data.symbol_code,
       }));
 
+      // 4. Proceed only if data was successfully received
       if (simplifiedData.length > 0) {
-        //Guard, if we get the weather..
+        // 5. Save current weather (first entry represents "now")
         allCitiesWeather.push(simplifiedData[0]); //we want to save the current weather data
 
-        // Create and store 4-day forecast for this city
+        // 6. Generate and store a 4-day forecast for this city
         const cityForecast = createForecast(data.timeSeries);
         allCitiesForecasts.push(cityForecast);
 
-        // Om detta är första staden som kommer tillbaka, visa den!
+        //  7. If this is the first city loaded, display its data in the UI
         if (allCitiesWeather.length === 1 && allCitiesForecasts[0]) {
           showWeather(allCitiesWeather[0]);
           showForecast(allCitiesForecasts[0]);
@@ -302,7 +316,7 @@ const weatherSymbols: {
   },
 };
 
-//Display the weather for the currently selected city
+//============ Function: Display the weather and forecast for the currently selected city============
 const displayCurrentCity = (): void => {
   if (!allCitiesWeather.length || !allCitiesForecasts.length) return; //Guard
   const currentWeather = allCitiesWeather[currentCityIndex];
@@ -315,10 +329,12 @@ const displayCurrentCity = (): void => {
   showForecast(currentForecast);
 };
 
-// Function to display 4-day forecast
+// ========= Function: Render the 4-day weather forecast in the UI ===========
 const showForecast = (forecast: ForecastDay[]): void => {
+  //1. Guard clause – ensure forecast data and container exist
   if (!forecastSection || !forecast.length) return;
 
+  //2. Generate HTML for each forecast day and inject into the DOM
   forecastSection.innerHTML = forecast
     .map(
       (day) => `
@@ -336,29 +352,33 @@ const showForecast = (forecast: ForecastDay[]): void => {
     .join("");
 };
 
-//Show weather funktion
+//================Function: Display current weather for a given city========================
 const showWeather = (p: WeatherItem): void => {
+  //1. Guard clause – ensure the weather display element exists
   if (!weatherDisplayEl) return; //Guard
 
+  //2. Format the timestamp into readable local time
   const formattedTime = new Date(p.time).toLocaleTimeString("sv-SE", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
+  //3. Get weather symbol and text description
   const symbol = weatherSymbols[p.symbol_code];
-
   const weatherText = symbol?.text || "Unknown weather";
-  //const weatherIcon = symbol?.icon;
 
+  // 4. Helper – determine if it’s currently day or night
   const isDayTime = (): boolean => {
     const hour = new Date().getHours();
     return hour >= 6 && hour < 18;
   };
 
+  //5. Select appropriate icon based on time of day
   const icon = isDayTime()
     ? weatherSymbols[p.symbol_code]?.iconDay
     : weatherSymbols[p.symbol_code]?.iconNight;
 
+  //6. Render weather card HTML into the UI
   weatherDisplayEl!.innerHTML += `
   <div class="weather-card">
     <img src="${icon}" alt="${weatherText}" class="weather-icon-top">
@@ -373,67 +393,23 @@ const showWeather = (p: WeatherItem): void => {
   `;
 };
 
-// När knappen klickas:
+//============= Event: Handle "Next" button click to display the next city====================
 nextBtn.onclick = () => {
+  // 1. Guard clause – ensure weather data exists
   if (allCitiesWeather.length === 0 || allCitiesForecasts.length === 0) return; // Säkerhet
+
+  //2. Move to the next city (wrap around when reaching the end)
   currentCityIndex = (currentCityIndex + 1) % allCitiesWeather.length;
 
+  //  3. Retrieve the corresponding forecast for the current city
   const currentForecast = allCitiesForecasts[currentCityIndex];
   if (!currentForecast) return;
 
+  //4. Clear previous weather and forecast from the display
   weatherDisplayEl.innerHTML = "";
   forecastSection.innerHTML = "";
+
+  //5. Render the weather and forecast for the selected city
   showWeather(allCitiesWeather[currentCityIndex]);
   showForecast(currentForecast);
 };
-
-// Visa den nya staden
-/*   const currentWeather = allCitiesWeather[currentCityIndex];
-  showWeather(currentWeather);
-}
- */
-
-// fetch(APIURL)
-//   .then((response) => {
-//     if (!response.ok) throw new Error("HTTP error " + response.status);
-//     return response.json();
-//   })
-//   .then((data: SMHIResponse) => {
-//     // Typen SMHIResponse gör att TypeScript vet vad 'data.timeSeries' innehåller
-//     const simplifiedData = data.timeSeries.map((p) => ({
-//       time: p.time,
-//       air_temperature: p.data.air_temperature,
-//       symbol_code: p.data.symbol_code,
-//     }));
-//     console.log(simplifiedData);
-//   })
-//   .catch((error) => {
-//     console.error("Error fetching weather data:", error);
-//   });
-
-/*
-Kravlista:
-Grader (air_temperature)
-
-City name (Ändra long lat)
-
-weather description (symbol_code)
-
-4 dagar forecast (ändra     const firstSeries = data.timeSeries[0];) denna)
-
-
-function buildUrl(lon: number, lat: number) {
-  // Du använder snow1g i exemplet – behåll det. (Funkar också med pmp3g/metfcst.)
-  return `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/${lon}/lat/${lat}/data.json`;
-}
-
-
-
-// ✅ Example: Use a specific city
-// const url = buildUrl(cities[0].lon, cities[0].lat); // Stockholm
-// console.log(url);
-
-
-// Or, for another city:
-
-// let url = buildUrl(cities[2].lon, cities[2].lat); // Malmö*/
