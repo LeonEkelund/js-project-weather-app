@@ -1,44 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Weather App</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Weather App</title>
-</head>
+  <body>
+    <!-- Wrapper for centering and constraining the app on larger screens -->
+    <div class="weather-app-wrapper">
+      <!-- Main application container -->
+      <main class="weather-app">
+        <!-- Decorative background shape(hidden from screen readers) -->
+        <div class="hero-bg" aria-hidden="true"></div>
+        
+        <!-- Header section with navigation menu -->
+        <header class="app-header">
+          <!-- Hamburger menu button with accessibility label -->
+          <button class="menu-btn" aria-label="Menu">
+            <!-- Three lines that make up the hamburger icon -->
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </header>
 
-<body>
-  <main class="weather-app">
-    <!-- Top navigation/header -->
-    <div class="hero-bg" aria-hidden="true"></div>
-    <header class="app-header">
-      <button class="menu-btn" aria-label="Menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-    </header>
+        <!-- Main weather display -->
+        <section class="weather-display" id="weatherDisplay">
+          <!-- Container for javascript -->
+        </section>
 
-    <!-- Main weather display -->
-    <section class="weather-display" id="weatherDisplay">
-      <!-- Container för javascript -->
-    </section>
+        <!-- 4-day forecast section -->
+        <section class="forecast-section" id="forecastSection">
+          <!-- Container for JavaScript-generated forecast content -->
+        </section>
 
-     <!-- 4-day forecast section -->
-    <section class="forecast-section" id="forecastSection">
-      <!-- 4-dagars prognos skapas av JavaScript -->
-    </section>
-
-    <!-- Navigation arrow -->
-    <button class="nav-arrow" aria-label="Next" id="btn">
-      <svg width="24" height="24" viewBox="0 0 24 24">
-        <path d="M8 4l8 8-8 8" stroke="white" stroke-width="2" fill="none" />
-      </svg>
-    </button>
-
-  </main>
-  <script type="module" src="./index.js"></script>
-</body>
+        <!-- Navigation arrow -->
+        <button class="nav-arrow" aria-label="Next" id="btn">
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <path d="M8 4l8 8-8 8" stroke="white" stroke-width="2" fill="none" />
+          </svg>
+        </button>
+      </main>
+    </div>
+    
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
 
 </html>

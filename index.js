@@ -19,9 +19,9 @@ let currentCityIndex = 0; //Keep track of the currently displayed city
 // Function to get day name from date
 const getDayName = (dateString) => {
     const date = new Date(dateString);
-    const today = new Date(); //dagens datum
-    const tomorrow = new Date(today); //kopia av dagens datum
-    tomorrow.setDate(today.getDate() + 1); //lägger till 1 dag = imorgon
+    const today = new Date(); 
+    const tomorrow = new Date(today); 
+    tomorrow.setDate(today.getDate() + 1); 
     if (date.toDateString() === today.toDateString())
         return 'Today';
     if (date.toDateString() === tomorrow.toDateString())
@@ -32,8 +32,8 @@ const getDayName = (dateString) => {
 const createForecast = (timeSeries) => {
     const dailyData = {};
     // Group data by date (next 4 days)
-    const today = new Date(); //skapar ett date objekt för dagens datum och tid
-    for (let i = 0; i < 4; i++) { //loopar 4 gånger för att skapa 4 dagar framåt
+    const today = new Date(); 
+    for (let i = 0; i < 4; i++) { 
         const date = new Date(today); //
         date.setDate(today.getDate() + i);
         const dateKey = date.toDateString();
@@ -155,7 +155,7 @@ const showForecast = (forecast) => {
     </div>
   `).join('');
 };
-//Show weather funktion
+//Show weather function
 const showWeather = (p) => {
     if (!weatherDisplayEl)
         return; //Guard
@@ -184,7 +184,8 @@ const showWeather = (p) => {
     </div>
   `;
 };
-// När knappen klickas:
+
+// when the button push
 nextBtn.onclick = () => {
     if (allCitiesWeather.length === 0 || allCitiesForecasts.length === 0)
         return; // Säkerhet
